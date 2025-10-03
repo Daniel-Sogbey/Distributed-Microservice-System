@@ -1,0 +1,19 @@
+syntax = "proto3";
+package order.v1;
+option go_package = "github.com/Daniel-Sogbey/micro-weekend/proto/order/v1;orderv1";
+
+message CreateOrderRequest { string user_id = 1; int64 amount_cents = 2; }
+message GetOrderRequest    { string id = 1; }
+enum Status { STATUS_UNSPECIFIED = 0; STATUS_PENDING = 1; STATUS_PAID = 2; STATUS_FAILED =3; }
+message Order {
+  string id = 1;
+  string user_id = 2;
+  int64  amount_cents = 3;
+  Status status = 4;       // "unspecified","pending","paid","failed"
+  int64  created_unix = 5;
+}
+
+service OrderService {
+  rpc CreateOrder(CreateOrderRequest) returns (Order);
+  rpc GetOrder(GetOrderRequest) returns (Order);
+}

@@ -1,0 +1,17 @@
+syntax = "proto3";
+package user.v1;
+option go_package = "github.com/Daniel-Sogbey/micro-weekend/proto/user/v1;userv1";
+
+message CreateUserRequest { string email = 1; string name = 2; }
+message GetUserRequest { string id = 1; }
+message User {
+    string id = 1;
+    string name = 2;
+    string email = 3;
+    int64 created_unix = 4;
+}
+
+service UserService {
+    rpc CreateUser(CreateUserRequest) returns (User);
+    rpc GetUser(GetUserRequest) returns (User);
+}
