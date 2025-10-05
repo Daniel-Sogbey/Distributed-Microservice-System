@@ -1,0 +1,13 @@
+syntax="proto3";
+package events.v1;
+option go_package="github.com/Daniel-Sogbey/micro-weekend/proto/events/v1;eventsv1";
+
+import "order/v1/order.proto";
+
+message OrderEvent {
+    string order_id = 1;
+    int64 amount_cents = 2;
+    string user_id = 3;
+    order.v1.Status payment_status = 4;
+    int64 created_unix = 5;
+}

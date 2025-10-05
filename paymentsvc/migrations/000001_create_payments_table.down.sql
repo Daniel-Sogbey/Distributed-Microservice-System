@@ -1,3 +1,3 @@
-DROP TABLE IF EXISTS users;
+DROP TABLE IF EXISTS payments;
 
 DROP EXTENSION IF EXISTS "uuid-ossp";

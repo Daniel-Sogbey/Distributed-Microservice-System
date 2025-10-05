@@ -16,7 +16,7 @@ type Repo struct {
 }
 
 func (r *Repo) Create(ctx context.Context, u *User) error {
-	query := `INSERT INTO users (name, email, created_unix) VALUES ($1,$2,$3,$4) RETURNING id`
+	query := `INSERT INTO users (name, email, created_unix) VALUES ($1,$2,$3) RETURNING id`
 
 	args := []any{u.Name, u.Email, time.Now().Unix()}
 

@@ -1,3 +1,5 @@
 DROP TABLE IF EXISTS orders;
 
 DROP TYPE IF EXISTS paymen_status;
+
+DROP EXTENSION IF EXISTS "uuid-ossp";

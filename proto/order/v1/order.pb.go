@@ -7,12 +7,11 @@
 package orderv1
 
 import (
+	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
+	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	reflect "reflect"
 	sync "sync"
 	unsafe "unsafe"
-
-	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
-	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 )
 
 const (
@@ -21,6 +20,58 @@ const (
 	// Verify that runtime/protoimpl is sufficiently up-to-date.
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
+
+type Status int32
+
+const (
+	Status_STATUS_UNSPECIFIED Status = 0
+	Status_STATUS_PENDING     Status = 1
+	Status_STATUS_PAID        Status = 2
+	Status_STATUS_FAILED      Status = 3
+)
+
+// Enum value maps for Status.
+var (
+	Status_name = map[int32]string{
+		0: "STATUS_UNSPECIFIED",
+		1: "STATUS_PENDING",
+		2: "STATUS_PAID",
+		3: "STATUS_FAILED",
+	}
+	Status_value = map[string]int32{
+		"STATUS_UNSPECIFIED": 0,
+		"STATUS_PENDING":     1,
+		"STATUS_PAID":        2,
+		"STATUS_FAILED":      3,
+	}
+)
+
+func (x Status) Enum() *Status {
+	p := new(Status)
+	*p = x
+	return p
+}
+
+func (x Status) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (Status) Descriptor() protoreflect.EnumDescriptor {
+	return file_proto_order_v1_order_proto_enumTypes[0].Descriptor()
+}
+
+func (Status) Type() protoreflect.EnumType {
+	return &file_proto_order_v1_order_proto_enumTypes[0]
+}
+
+func (x Status) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use Status.Descriptor instead.
+func (Status) EnumDescriptor() ([]byte, []int) {
+	return file_proto_order_v1_order_proto_rawDescGZIP(), []int{0}
+}
 
 type CreateOrderRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
@@ -123,7 +174,7 @@ type Order struct {
 	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 	UserId        string                 `protobuf:"bytes,2,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
 	AmountCents   int64                  `protobuf:"varint,3,opt,name=amount_cents,json=amountCents,proto3" json:"amount_cents,omitempty"`
-	Status        string                 `protobuf:"bytes,4,opt,name=status,proto3" json:"status,omitempty"` // "pending","paid","failed"
+	Status        Status                 `protobuf:"varint,4,opt,name=status,proto3,enum=order.v1.Status" json:"status,omitempty"` // "unspecified","pending","paid","failed"
 	CreatedUnix   int64                  `protobuf:"varint,5,opt,name=created_unix,json=createdUnix,proto3" json:"created_unix,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -180,11 +231,11 @@ func (x *Order) GetAmountCents() int64 {
 	return 0
 }
 
-func (x *Order) GetStatus() string {
+func (x *Order) GetStatus() Status {
 	if x != nil {
 		return x.Status
 	}
-	return ""
+	return Status_STATUS_UNSPECIFIED
 }
 
 func (x *Order) GetCreatedUnix() int64 {
@@ -203,13 +254,18 @@ const file_proto_order_v1_order_proto_rawDesc = "" +
 	"\auser_id\x18\x01 \x01(\tR\x06userId\x12!\n" +
 	"\famount_cents\x18\x02 \x01(\x03R\vamountCents\"!\n" +
 	"\x0fGetOrderRequest\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\tR\x02id\"\x8e\x01\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\"\xa0\x01\n" +
 	"\x05Order\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x17\n" +
 	"\auser_id\x18\x02 \x01(\tR\x06userId\x12!\n" +
-	"\famount_cents\x18\x03 \x01(\x03R\vamountCents\x12\x16\n" +
-	"\x06status\x18\x04 \x01(\tR\x06status\x12!\n" +
-	"\fcreated_unix\x18\x05 \x01(\x03R\vcreatedUnix2\x84\x01\n" +
+	"\famount_cents\x18\x03 \x01(\x03R\vamountCents\x12(\n" +
+	"\x06status\x18\x04 \x01(\x0e2\x10.order.v1.StatusR\x06status\x12!\n" +
+	"\fcreated_unix\x18\x05 \x01(\x03R\vcreatedUnix*X\n" +
+	"\x06Status\x12\x16\n" +
+	"\x12STATUS_UNSPECIFIED\x10\x00\x12\x12\n" +
+	"\x0eSTATUS_PENDING\x10\x01\x12\x0f\n" +
+	"\vSTATUS_PAID\x10\x02\x12\x11\n" +
+	"\rSTATUS_FAILED\x10\x032\x84\x01\n" +
 	"\fOrderService\x12<\n" +
 	"\vCreateOrder\x12\x1c.order.v1.CreateOrderRequest\x1a\x0f.order.v1.Order\x126\n" +
 	"\bGetOrder\x12\x19.order.v1.GetOrderRequest\x1a\x0f.order.v1.OrderB?Z=github.com/Daniel-Sogbey/micro-weekend/proto/order/v1;orderv1b\x06proto3"
@@ -226,22 +282,25 @@ func file_proto_order_v1_order_proto_rawDescGZIP() []byte {
 	return file_proto_order_v1_order_proto_rawDescData
 }
 
+var file_proto_order_v1_order_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
 var file_proto_order_v1_order_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
 var file_proto_order_v1_order_proto_goTypes = []any{
-	(*CreateOrderRequest)(nil), // 0: order.v1.CreateOrderRequest
-	(*GetOrderRequest)(nil),    // 1: order.v1.GetOrderRequest
-	(*Order)(nil),              // 2: order.v1.Order
+	(Status)(0),                // 0: order.v1.Status
+	(*CreateOrderRequest)(nil), // 1: order.v1.CreateOrderRequest
+	(*GetOrderRequest)(nil),    // 2: order.v1.GetOrderRequest
+	(*Order)(nil),              // 3: order.v1.Order
 }
 var file_proto_order_v1_order_proto_depIdxs = []int32{
-	0, // 0: order.v1.OrderService.CreateOrder:input_type -> order.v1.CreateOrderRequest
-	1, // 1: order.v1.OrderService.GetOrder:input_type -> order.v1.GetOrderRequest
-	2, // 2: order.v1.OrderService.CreateOrder:output_type -> order.v1.Order
-	2, // 3: order.v1.OrderService.GetOrder:output_type -> order.v1.Order
-	2, // [2:4] is the sub-list for method output_type
-	0, // [0:2] is the sub-list for method input_type
-	0, // [0:0] is the sub-list for extension type_name
-	0, // [0:0] is the sub-list for extension extendee
-	0, // [0:0] is the sub-list for field type_name
+	0, // 0: order.v1.Order.status:type_name -> order.v1.Status
+	1, // 1: order.v1.OrderService.CreateOrder:input_type -> order.v1.CreateOrderRequest
+	2, // 2: order.v1.OrderService.GetOrder:input_type -> order.v1.GetOrderRequest
+	3, // 3: order.v1.OrderService.CreateOrder:output_type -> order.v1.Order
+	3, // 4: order.v1.OrderService.GetOrder:output_type -> order.v1.Order
+	3, // [3:5] is the sub-list for method output_type
+	1, // [1:3] is the sub-list for method input_type
+	1, // [1:1] is the sub-list for extension type_name
+	1, // [1:1] is the sub-list for extension extendee
+	0, // [0:1] is the sub-list for field type_name
 }
 
 func init() { file_proto_order_v1_order_proto_init() }
@@ -254,13 +313,14 @@ func file_proto_order_v1_order_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_proto_order_v1_order_proto_rawDesc), len(file_proto_order_v1_order_proto_rawDesc)),
-			NumEnums:      0,
+			NumEnums:      1,
 			NumMessages:   3,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
 		GoTypes:           file_proto_order_v1_order_proto_goTypes,
 		DependencyIndexes: file_proto_order_v1_order_proto_depIdxs,
+		EnumInfos:         file_proto_order_v1_order_proto_enumTypes,
 		MessageInfos:      file_proto_order_v1_order_proto_msgTypes,
 	}.Build()
 	File_proto_order_v1_order_proto = out.File

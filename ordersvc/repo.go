@@ -3,6 +3,8 @@ package main
 import (
 	"context"
 	"database/sql"
+	"fmt"
+	"strings"
 	"time"
 )
 
@@ -16,7 +18,39 @@ const (
 )
 
 func (p PaymentStatus) String() string {
-	return [...]string{"payment_unspecified", "payment_pending", "payment_paid", "payment_failed"}[p]
+	return [...]string{"unspecified", "pending", "paid", "failed"}[p]
+}
+
+func (p *PaymentStatus) Scan(v interface{}) error {
+	var status PaymentStatus
+	var err error
+	switch val := v.(type) {
+	case string:
+		status, err = parsePaymentStatus(val)
+		*p = status
+	case []byte:
+		status, err = parsePaymentStatus(string(val))
+		*p = status
+	default:
+		return fmt.Errorf("failed to scan PaymentStatus. Err:%v", err)
+	}
+
+	return err
+}
+
+func parsePaymentStatus(v string) (PaymentStatus, error) {
+	switch strings.ToLower(v) {
+	case "unspecified":
+		return Payment_Unspecified, nil
+	case "pending":
+		return Payment_Pending, nil
+	case "paid":
+		return Payment_Paid, nil
+	case "failed":
+		return Payment_Failed, nil
+	}
+
+	return Payment_Unspecified, fmt.Errorf("invalid payment status string %s", v)
 }
 
 type Order struct {
@@ -34,9 +68,9 @@ type Repo struct {
 func (r *Repo) Create(ctx context.Context, order *Order) error {
 	query := `INSERT INTO orders (user_id, amount_cents, status, created_unix) VALUES ($1,$2,$3,$4) RETURNING id`
 
-	args := []any{order.UserId, order.AmountCents, order.PaymentStatus, time.Now().Unix()}
+	args := []any{order.UserId, order.AmountCents, order.PaymentStatus.String(), time.Now().Unix()}
 
-	return r.DB.QueryRowContext(ctx, query, args...).Scan(order.Id)
+	return r.DB.QueryRowContext(ctx, query, args...).Scan(&order.Id)
 }
 
 func (r *Repo) Get(ctx context.Context, id string) (*Order, error) {

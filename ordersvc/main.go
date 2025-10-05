@@ -55,7 +55,7 @@ func main() {
 		repo:     &Repo{DB: db},
 		rabbitMQ: &RabbitMQ{conn: amqpConn, channel: channel},
 	})
-	log.Printf("usersvc listening at %s\n", grpcAddr)
+	log.Printf("ordersvc listening at %s\n", grpcAddr)
 	log.Fatal(srv.Serve(lis))
 }
 

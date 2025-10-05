@@ -34,14 +34,18 @@ services:
     ports: ["50052:50052"]
 
   paymentsvc:
-    build: ./paymentsvc
+    build:
+      context: .
+      dockerfile: paymentsvc/Dockerfile
     environment:
       DB_URL: postgres://app:app@postgres:5432/payments_db?sslmode=disable
-      RABBIT_URL: amqp://guest:guest@rabbitmq:5672/
+      RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672/
     depends_on: [postgres, rabbitmq]
 
   gateway:
-    build: ./gateway
+    build:
+      context: .
+      dockerfile: gateway/Dockerfile
     environment:
       USERSVC_ADDR: usersvc:50051
       ORDERSVC_ADDR: ordersvc:50052
